@@ -1,5 +1,7 @@
 package com.pft.user.service.impl;
 
+import com.pft.user.dto.response.UserDto;
+import com.pft.user.exception.AlreadyExistsException;
 import com.pft.user.exception.NotFoundException;
 import com.pft.user.model.User;
 import com.pft.user.repository.UserRepository;
@@ -17,22 +19,44 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDto> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(UserDto::fromEntity)
+                .toList();
     }
 
     @Override
-    public User createUser(User user) {
-        return userRepository.save(user);
+    public UserDto createUser(UserDto userDto) {
+        existsByUsername(userDto);
+        existsByEmail(userDto);
+
+        User user = userDto.toEntity();
+
+        return UserDto.fromEntity(userRepository.save(user));
     }
 
     @Override
-    public User getUserById(UUID userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
+    public UserDto getUserById(UUID userId) {
+        return UserDto.fromEntity(
+                userRepository.findById(userId)
+                        .orElseThrow(NotFoundException::new)
+        );
     }
 
     @Override
     public void deleteUser(UUID userId) {
         userRepository.deleteById(userId);
+    }
+
+    private void existsByUsername(UserDto userDto) {
+        if (userRepository.existsByUsername(userDto.userName())) {
+            throw new AlreadyExistsException();
+        }
+    }
+
+    private void existsByEmail(UserDto userDto) {
+        if (userRepository.existsByEmail(userDto.userEmail())) {
+            throw new AlreadyExistsException();
+        }
     }
 }
