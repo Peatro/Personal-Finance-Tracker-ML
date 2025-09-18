@@ -7,6 +7,7 @@ import com.pft.user.model.User;
 import com.pft.user.repository.UserRepository;
 import com.pft.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<UserDto> getAllUsers() {
@@ -31,6 +33,8 @@ public class UserServiceImpl implements UserService {
         existsByEmail(userDto);
 
         User user = userDto.toEntity();
+
+        user.setPassword(passwordEncoder.encode(userDto.userPassword()));
 
         return UserDto.fromEntity(userRepository.save(user));
     }

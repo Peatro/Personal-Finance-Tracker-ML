@@ -18,7 +18,11 @@ public record UserDto(
         String userName,
 
         @Email(message = "Email should be valid")
-        String userEmail
+        String userEmail,
+
+        @NotBlank
+        @Size(min = 6, message = "Password must be at least 6 characters")
+        String userPassword
 ) {
     public static UserDto fromEntity(User user) {
         return UserDto.builder()
@@ -33,6 +37,7 @@ public record UserDto(
                 .id(userId)
                 .username(userName)
                 .email(userEmail)
+                .password(userPassword)
                 .build();
     }
 
