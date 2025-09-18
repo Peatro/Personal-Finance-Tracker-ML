@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/pft_db
+    username: pft
+    password: pft
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

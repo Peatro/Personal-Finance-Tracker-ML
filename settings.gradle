@@ -1,1 +1,8 @@
 rootProject.name = 'PersonalFinanceTracker'
+include 'common'
+include 'user-service'
+include 'transaction-service'
+include 'categorization-service'
+include 'analytics-service'
+include 'notification-service'
+include 'api-gateway'
